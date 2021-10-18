@@ -27,13 +27,13 @@ int main(){
     vector<Particle> pl;
     Particle singly_charged_Calcium = Particle(q, m, r, v);
     PenningTrap trap = PenningTrap(B_0, V_0, d, pl);
+    trap.add_particle(singly_charged_Calcium);
 
     std::cout << singly_charged_Calcium.charge << singly_charged_Calcium.mass << singly_charged_Calcium.position;
-
-    trap.evolve_forward_Euler(0.1);
-    trap.evolve_forward_Euler(0.1);
-    trap.evolve_forward_Euler(0.1);
-    trap.evolve_forward_Euler(0.1);
-    std::cout << trap.particle_l[0].mass;
+    //std::cout << trap.particle_l[0].position;
+    trap.evolve_RK4(0.1);
+    std::cout << trap.particle_l[0].position;
+    //trap.evolve_forward_Euler(0.1);
+    //trap.evolve_forward_Euler(0.1);
     return 0;
 }

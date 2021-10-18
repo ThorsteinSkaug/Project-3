@@ -48,8 +48,12 @@ arma::vec PenningTrap::total_force_external(int i){
 arma::vec PenningTrap::total_force_particles(int i){
   double k_e =  1.38935333*pow(10,5);
   arma::vec F_part = {k_e, k_e, k_e};
-  for(Particle p : particle_l){
-    F_part += p.charge * ((particle_l[i].position - p.position) / pow(abs(particle_l[i].position - p.position), 3));
+  if(particle_l.size()==1){
+    F_part = {0,0,0};
+  }else{
+    for(int j=0; j<particle_l.size(); j++){
+      F_part += particle_l[j].charge * ((particle_l[i].position - particle_l[j].position) / pow(abs(particle_l[i].position - particle_l[j].position), 3));
+    }
   }
   return F_part;
 }
@@ -61,48 +65,87 @@ arma::vec PenningTrap::total_force(int i){
 
 
 
-void PenningTrap::evolve_RK4(double dt, vector<Particle>& updated_particle_l){
-  arma::mat a;
+void PenningTrap::evolve_RK4(double dt){
+
   int n = particle_l.size();
+  arma::mat a(n, 3);
+
+
+  arma::mat k1x(n, 3), k2x(n, 3), k3x(n, 3), k4x(n, 3), k1v(n, 3), k2v(n, 3), k3v(n, 3), k4v(n, 3);
+
+  //arma::vec original_particle_l = particle_l;
+
   for(int i = 0; i < n; i++){
     a[i,0] = total_force(i)[0] / particle_l[i].mass;
     a[i,1] = total_force(i)[1] / particle_l[i].mass;
     a[i,2] = total_force(i)[2] / particle_l[i].mass;
   }
 
-
-  arma::vec k1x, k2x, k3x, k4x, k1v, k2v, k3v, k4v;
-
+  //k1 update
   for(int j = 0; j < n; j++){
     for(int i=0; i<3; i++){
-      k1v[i] = a[j,i] * dt;
-      k1x[i] = particle_l[j].velocity[i] * dt;
+      k1v[j,i] = a[j,i] * dt;
+      k1x[j,i] = particle_l[j].velocity[i] * dt;
+
+      particle_l[j].velocity[i] += k1v[j,i]/2;
+      particle_l[j].position[i] += k1x[j,i]/2;
     }
-
-    Particle original_particle = particle_l[j];
-
-    particle_l[j].position += k1x/2;
-    particle_l[j].velocity += k1v/2;
-    k2v = total_force(j)/particle_l[j].mass * dt;
-    k2x = (original_particle.velocity + k1v/2) * dt;
-
-    particle_l[j] = original_particle;
-    particle_l[j].position += k2x/2;
-    particle_l[j].velocity += k2v/2;
-    k3v = total_force(j)/particle_l[j].mass * dt;
-    k3x = (original_particle.velocity + k2v/2) * dt;
-
-    particle_l[j] = original_particle;
-    particle_l[j].position += k3x;
-    particle_l[j].velocity += k3v;
-    k4v = total_force(j)/particle_l[j].mass * dt;
-    k4x = (original_particle.velocity + k3v) * dt;
-
-
-    Particle new_particle(original_particle.charge, original_particle.mass, original_particle.position + 1/6 * (k1x+2*k2x+2*k3x+k4x), original_particle.velocity + 1/6 * (k1v+2*k2v+2*k3v+k4v));
-    updated_particle_l.push_back(new_particle);
   }
 
+  //k2 update
+  for(int i = 0; i < n; i++){
+    a[i,0] = total_force(i)[0] / particle_l[i].mass;
+    a[i,1] = total_force(i)[1] / particle_l[i].mass;
+    a[i,2] = total_force(i)[2] / particle_l[i].mass;
+  }
+
+  for(int j = 0; j < n; j++){
+      for(int i=0; i<3; i++){
+        k2v[j,i] = a[j,i] * dt;
+        k2x[j,i] = particle_l[j].velocity[i] * dt;
+
+        particle_l[j].velocity[i] += k2v[j,i]/2;
+        particle_l[j].position[i] += k2x[j,i]/2;
+      }
+    }
+
+    //k3 update
+    for(int i = 0; i < n; i++){
+      a[i,0] = total_force(i)[0] / particle_l[i].mass;
+      a[i,1] = total_force(i)[1] / particle_l[i].mass;
+      a[i,2] = total_force(i)[2] / particle_l[i].mass;
+    }
+
+    for(int j = 0; j < n; j++){
+        for(int i=0; i<3; i++){
+          k3v[j,i] = a[j,i] * dt;
+          k3x[j,i] = particle_l[j].velocity[i] * dt;
+
+          particle_l[j].velocity[i] += k3v[j,i];
+          particle_l[j].position[i] += k3x[j,i];
+        }
+      }
+
+      //k4 update
+    for(int i = 0; i < n; i++){
+      a[i,0] = total_force(i)[0] / particle_l[i].mass;
+      a[i,1] = total_force(i)[1] / particle_l[i].mass;
+      a[i,2] = total_force(i)[2] / particle_l[i].mass;
+    }
+
+    for(int j = 0; j < n; j++){
+        for(int i=0; i<3; i++){
+          k4v[j,i] = a[j,i] * dt;
+          k4x[j,i] = particle_l[j].velocity[i] * dt;
+        }
+      }
+
+      for(int j = 0; j < n; j++){
+          for(int i=0; i < 3; i++){
+            particle_l[j].velocity[i] += 1/6*(k1v[j,i]+2*k1v[j,i]+2*k3v[j,i]+k4v[j,i]);
+            particle_l[j].position[i] += 1/6*(k1x[j,i]+2*k1x[j,i]+2*k3x[j,i]+k4x[j,i]);
+          }
+        }
 }
 
 
@@ -124,12 +167,13 @@ void PenningTrap::evolve_RK4(double dt, vector<Particle>& updated_particle_l){
 
 
 void PenningTrap::evolve_forward_Euler(double dt){
-  arma::mat a;
+  arma::mat a(particle_l.size(), 3);
   int n = particle_l.size();
   for(int i = 0; i < n; i++){
-    a[i,0] = total_force(i)[0] / particle_l[i].mass;
-    a[i,1] = total_force(i)[1] / particle_l[i].mass;
-    a[i,2] = total_force(i)[2] / particle_l[i].mass;
+    arma::vec tf = total_force(i);
+    a[i,0] = tf[0] / particle_l[i].mass;
+    a[i,1] = tf[1] / particle_l[i].mass;
+    a[i,2] = tf[2] / particle_l[i].mass;
   }
 
   for(int j = 0; j < n; j++){
@@ -138,6 +182,4 @@ void PenningTrap::evolve_forward_Euler(double dt){
       particle_l[j].velocity[i] += a[j, i] * dt;
     }
   }
-  cout << "hei" <<particle_l[0].position << "\n";
-
 }
