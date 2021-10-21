@@ -62,13 +62,17 @@ arma::vec PenningTrap::total_force_particles(int i){
 }
 
 // The total force on particle_i from both external fields and other particles
-arma::vec PenningTrap::total_force(int i){
-  return total_force_external(i) + total_force_particles(i);
+arma::vec PenningTrap::total_force(int i, bool particle_interaction){
+  if(particle_interaction){
+    return total_force_external(i) + total_force_particles(i);
+  }else{
+    return total_force_external(i);
+  }
 }
 
 
 
-void PenningTrap::evolve_RK4(double dt){
+void PenningTrap::evolve_RK4(double dt, bool particle_interaction){
 
   int n = particle_l.size();
   arma::mat a(n, 3);
@@ -79,9 +83,9 @@ void PenningTrap::evolve_RK4(double dt){
   std::vector<Particle> original_particle_l = particle_l;
 
   for(int i = 0; i < n; i++){
-    a[i,0] = total_force(i)[0] / particle_l[i].mass;
-    a[i,1] = total_force(i)[1] / particle_l[i].mass;
-    a[i,2] = total_force(i)[2] / particle_l[i].mass;
+    a[i,0] = total_force(i, particle_interaction)[0] / particle_l[i].mass;
+    a[i,1] = total_force(i, particle_interaction)[1] / particle_l[i].mass;
+    a[i,2] = total_force(i, particle_interaction)[2] / particle_l[i].mass;
   }
 
   //k1 update
@@ -98,9 +102,9 @@ void PenningTrap::evolve_RK4(double dt){
 
   //k2 update
   for(int i = 0; i < n; i++){
-    a[i,0] = total_force(i)[0] / particle_l[i].mass;
-    a[i,1] = total_force(i)[1] / particle_l[i].mass;
-    a[i,2] = total_force(i)[2] / particle_l[i].mass;
+    a[i,0] = total_force(i, particle_interaction)[0] / particle_l[i].mass;
+    a[i,1] = total_force(i, particle_interaction)[1] / particle_l[i].mass;
+    a[i,2] = total_force(i, particle_interaction)[2] / particle_l[i].mass;
   }
 
   for(int j = 0; j < n; j++){
@@ -115,9 +119,9 @@ void PenningTrap::evolve_RK4(double dt){
 
     //k3 update
     for(int i = 0; i < n; i++){
-      a[i,0] = total_force(i)[0] / particle_l[i].mass;
-      a[i,1] = total_force(i)[1] / particle_l[i].mass;
-      a[i,2] = total_force(i)[2] / particle_l[i].mass;
+      a[i,0] = total_force(i, particle_interaction)[0] / particle_l[i].mass;
+      a[i,1] = total_force(i, particle_interaction)[1] / particle_l[i].mass;
+      a[i,2] = total_force(i, particle_interaction)[2] / particle_l[i].mass;
     }
 
     for(int j = 0; j < n; j++){
@@ -132,9 +136,9 @@ void PenningTrap::evolve_RK4(double dt){
 
       //k4 update
     for(int i = 0; i < n; i++){
-      a[i,0] = total_force(i)[0] / particle_l[i].mass;
-      a[i,1] = total_force(i)[1] / particle_l[i].mass;
-      a[i,2] = total_force(i)[2] / particle_l[i].mass;
+      a[i,0] = total_force(i, particle_interaction)[0] / particle_l[i].mass;
+      a[i,1] = total_force(i, particle_interaction)[1] / particle_l[i].mass;
+      a[i,2] = total_force(i, particle_interaction)[2] / particle_l[i].mass;
     }
 
     for(int j = 0; j < n; j++){
@@ -157,14 +161,14 @@ void PenningTrap::evolve_RK4(double dt){
 
 
 
-void PenningTrap::evolve_forward_Euler(double dt){
+void PenningTrap::evolve_forward_Euler(double dt, bool particle_interaction){
   int n = particle_l.size();
   arma::mat a(n, 3);
   for(int i = 0; i < n; i++){
     //arma::vec tf = total_force(i);
-    a[i,0] = total_force(i)[0] / particle_l[i].mass;
-    a[i,1] = total_force(i)[1] / particle_l[i].mass;
-    a[i,2] = total_force(i)[2] / particle_l[i].mass;
+    a[i,0] = total_force(i, particle_interaction)[0] / particle_l[i].mass;
+    a[i,1] = total_force(i, particle_interaction)[1] / particle_l[i].mass;
+    a[i,2] = total_force(i, particle_interaction)[2] / particle_l[i].mass;
   }
 
   for(int j = 0; j < n; j++){

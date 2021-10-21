@@ -46,6 +46,8 @@ int main(){
     double w_p = (w_0 + sqrt(pow(w_0,2)-2*pow(w_z,2)))/2;
     double w_m = (w_0 - sqrt(pow(w_0,2)-2*pow(w_z,2)))/2;
 
+    bool particle_interaction1particle = false;
+
     arma::vec x(int(100/dt)+1);
     x(0) = trap.particle_l[0].position[0];
     arma::vec y(int(100/dt)+1);
@@ -71,7 +73,7 @@ int main(){
     myfile.open("coordinates_rk.txt");
     myfile << std::scientific << 0 << " " << std::scientific << trap.particle_l[0].position[0] << " " << std::scientific << trap.particle_l[0].position[1] <<" " << std::scientific << trap.particle_l[0].position[2] << "\n";
     for(int i=0; i<int(100/dt); i++){
-      trap.evolve_RK4(dt);
+      trap.evolve_RK4(dt, particle_interaction1particle);
       myfile << std::scientific << dt*(i+1) << " " << std::scientific << trap.particle_l[0].position[0] << " " << std::scientific << trap.particle_l[0].position[1] <<" " << std::scientific << trap.particle_l[0].position[2] << "\n"; //Write the number of iteration needed for convergence to file
     }
     //End RK4 solution part
@@ -91,7 +93,7 @@ int main(){
     myfile2 << std::scientific << 0 << " " << std::scientific << trap2.particle_l[0].position[0] << " " << std::scientific << trap2.particle_l[0].position[1] <<" " << std::scientific << trap2.particle_l[0].position[2] << "\n";
     dt = 0.001;
     for(int i=0; i<int(100/dt); i++){
-      trap2.evolve_forward_Euler(dt);
+      trap2.evolve_forward_Euler(dt, particle_interaction1particle);
       myfile2 << std::scientific << dt*(i+1) << " " << std::scientific << trap2.particle_l[0].position[0] << " " << std::scientific << trap2.particle_l[0].position[1] <<" " << std::scientific << trap2.particle_l[0].position[2] << "\n"; //Write the number of iteration needed for convergence to file
     }
     //End euler solution part
@@ -100,6 +102,8 @@ int main(){
 
 
     //Two particles:
+    bool particle_interaction2particle_without = false;
+
     arma::vec r2 = {2., 0.3, 1.2};
     arma::vec v2 = {-0.3, 1., 0.2};
     std::vector<Particle> pl2particles;
@@ -112,7 +116,7 @@ int main(){
     myfile2particles.open("coordinates_rk2particles.txt");
     myfile2particles << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << "\n";
     for(int i=0; i<int(100/dt); i++){
-      trap2particles.evolve_RK4(dt);
+      trap2particles.evolve_RK4(dt, particle_interaction2particle_without);
       myfile2particles << std::scientific << dt*(i+1) << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << "\n"; //Write the number of iteration needed for convergence to file
     }
 
