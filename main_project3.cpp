@@ -48,16 +48,16 @@ int main(){
 
     bool particle_interaction1particle = false;
 
+
+    double A_p = (1+w_m*1.)/(w_m - w_p);
+    double A_m = (1+w_p*1.)/(w_m - w_p);
+
     arma::vec x(int(t/dt)+1);
     x(0) = trap.particle_l[0].position[0];
     arma::vec y(int(t/dt)+1);
     y(0) = trap.particle_l[0].position[1];
     arma::vec z(int(t/dt)+1);
     z(0) = trap.particle_l[0].position[2];
-
-    double A_p = (1+w_m*1.)/(w_m - w_p);
-    double A_m = (1+w_p*1.)/(w_m - w_p);
-
     analytical_solution(x, y, z, dt, w_z, w_p, w_m, A_p, A_m);
 
     std::ofstream myfile_an;
@@ -79,13 +79,23 @@ int main(){
 
     std::vector<double> h = {0.1, 0.05, 0.01, 0.005, 0.001};
     for(int i=0; i<5; i++){
+      arma::vec x(int(t/h[i])+1);
+      x(0) = trap.particle_l[0].position[0];
+      arma::vec y(int(t/h[i])+1);
+      y(0) = trap.particle_l[0].position[1];
+      arma::vec z(int(t/h[i])+1);
+      z(0) = trap.particle_l[0].position[2];
+
+      analytical_solution(x, y, z, h[i], w_z, w_p, w_m, A_p, A_m);
+
       std::ofstream myfile;
       dt = h[i];
       myfile.open("coordinates_rk" + std::to_string(dt) + ".txt");
-      myfile << std::scientific << 0 << " " << std::scientific << trap.particle_l[0].position[0] << " " << std::scientific << trap.particle_l[0].position[1] <<" " << std::scientific << trap.particle_l[0].position[2] << "\n";
+      myfile << std::scientific << 0 << " " << std::scientific << trap.particle_l[0].position[0]-x(0) << " " << std::scientific << trap.particle_l[0].position[1]-y(0) <<" " << std::scientific << trap.particle_l[0].position[2]-z(0) << "\n";
       for(int i=0; i<int(t/dt); i++){
+
         trap.evolve_RK4(dt, particle_interaction1particle);
-        myfile << std::scientific << dt*(i+1) << " " << std::scientific << trap.particle_l[0].position[0] << " " << std::scientific << trap.particle_l[0].position[1] <<" " << std::scientific << trap.particle_l[0].position[2] << "\n"; //Write the number of iteration needed for convergence to file
+        myfile << std::scientific << dt*(i+1) << " " << std::scientific << trap.particle_l[0].position[0]-x(i+1) << " " << std::scientific << trap.particle_l[0].position[1] <<" " << std::scientific << trap.particle_l[0].position[2] << "\n"; //Write the number of iteration needed for convergence to file
       }
     }
     //End RK4 solution part
@@ -125,11 +135,11 @@ int main(){
     trap2particles.add_particle(singly_charged_Calcium_nr2);
 
     std::ofstream myfile2particles;
-    myfile2particles.open("coordinates_rk2particles_without.txt");
-    myfile2particles << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << "\n";
+    myfile2particles.open("rk2particles_without.txt");
+    myfile2particles << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] <<"\n";
     for(int i=0; i<int(t/dt); i++){
       trap2particles.evolve_RK4(dt, particle_interaction2particle_without);
-      myfile2particles << std::scientific << dt*(i+1) << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << "\n"; //Write the number of iteration needed for convergence to file
+      myfile2particles << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] <<"\n";
     }
 
     //Two particles:
@@ -140,11 +150,11 @@ int main(){
     trap2particles2.add_particle(singly_charged_Calcium_nr2);
 
     std::ofstream myfile2particles2;
-    myfile2particles2.open("coordinates_rk2particles_with.txt");
-    myfile2particles2 << std::scientific << 0 << " " << std::scientific << trap2particles2.particle_l[0].position[0] << " " << std::scientific << trap2particles2.particle_l[0].position[1] <<" " << std::scientific << trap2particles2.particle_l[0].position[2] << " " << std::scientific << trap2particles2.particle_l[1].position[0] << " " << std::scientific << trap2particles2.particle_l[1].position[1] <<" " << std::scientific << trap2particles2.particle_l[1].position[2] << "\n";
+    myfile2particles2.open("rk2particles_with.txt");
+    myfile2particles2 << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] <<"\n";
     for(int i=0; i<int(t/dt); i++){
       trap2particles2.evolve_RK4(dt, particle_interaction2particle_with);
-      myfile2particles2 << std::scientific << dt*(i+1) << " " << std::scientific << trap2particles2.particle_l[0].position[0] << " " << std::scientific << trap2particles2.particle_l[0].position[1] <<" " << std::scientific << trap2particles2.particle_l[0].position[2] << " " << std::scientific << trap2particles2.particle_l[1].position[0] << " " << std::scientific << trap2particles2.particle_l[1].position[1] <<" " << std::scientific << trap2particles2.particle_l[1].position[2] << "\n"; //Write the number of iteration needed for convergence to file
+      myfile2particles2 << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] <<"\n";
     }
 
 
