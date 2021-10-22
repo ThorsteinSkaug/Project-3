@@ -10,17 +10,19 @@ class PenningTrap
 {
 
 public:
-  double B0_, V0_, d_, f_, w_V_; //Storing the magnetic field strength. applied potential and dimension of the penning trap
+  double B0_, V0_, d_, f_, w_V_, t_; //Storing the magnetic field strength. applied potential and dimension of the penning trap
   std::vector<Particle> particle_l; //Storing a vector with the variables from the particle class.
 
-  // Constructor
-  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl, double f, double w_V);
+  // Constructors
+  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl);
+  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f, double w_V, double t);
 
   // Add a particle to the trap
   void add_particle(Particle p_in);
 
   // External electric field at point r=(x,y,z)
   arma::vec external_E_field(arma::vec r, double t);
+  arma::vec external_E_field_time_dependent(arma::vec r, double time);
 
   // External magnetic field at point r=(x,y,z)
   arma::vec external_B_field(arma::vec r);
@@ -42,6 +44,8 @@ public:
 
   // Evolve the system one time step (dt) using Forward Euler
   void evolve_forward_Euler(double dt, bool particle_interaction);
+
+  arma::vec (PenningTrap::*E_field)(arma::vec r, double t);
 };
 
 

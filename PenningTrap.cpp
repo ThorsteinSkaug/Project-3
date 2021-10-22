@@ -6,7 +6,18 @@ using namespace std;
 
 
 // Definition of the constructor
-PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f=0, double w_V=0)
+PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in)
+{
+  B0_ = B0_in;
+  V0_ = V0_in;
+  d_ = d_in;
+  particle_l = pl_in;
+  t_ = 0;
+
+  E_field = &PenningTrap::external_E_field;
+}
+
+PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f, double w_V, double t)
 {
   B0_ = B0_in;
   V0_ = V0_in;
@@ -14,6 +25,8 @@ PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in, vector<Particl
   particle_l = pl_in;
   f_ = f;
   w_V_ = w_V;
+  t_ = 0;
+  E_field = &PenningTrap::external_E_field_time_dependent;
 }
 
 
@@ -23,13 +36,18 @@ void PenningTrap::add_particle(Particle p_in)
 }
 
 
-arma::vec PenningTrap::external_E_field(arma::vec r, double t = 0){
-  double new_V0 = V0_*(1+f_*cos(w_V_*t));
+arma::vec PenningTrap::external_E_field_time_dependent(arma::vec r, double time){
+  double new_V0 = V0_*(1+f_*cos(w_V_*time));
   arma::vec E_field = {(new_V0/pow(d_, 2))*r(0), (new_V0/pow(d_, 2))*r(1), -2*(new_V0/pow(d_, 2))*r(2)};
 
   return E_field;
 }
 
+arma::vec PenningTrap::external_E_field(arma::vec r, double t){
+  arma::vec E_field = {(V0_/pow(d_, 2))*r(0), (V0_/pow(d_, 2))*r(1), -2*(V0_/pow(d_, 2))*r(2)};
+
+  return E_field;
+}
 
 arma::vec PenningTrap::external_B_field(arma::vec r){
     arma::vec B_field = {0,0,B0_};
@@ -43,7 +61,7 @@ arma::vec PenningTrap::total_force_external(int i){
   //cout<< cross_prod;
   //arma::vec ma_kalles_noe = {particle_l[i].position[0], particle_l[i].position[1], -2*particle_l[i].position[2]};
 
-  arma::vec F_ex = particle_l[i].charge * external_E_field(particle_l[i].position)  + cross_prod;//*(V0_ / pow(d_,2))*ma_kalles_noe ;
+  arma::vec F_ex = particle_l[i].charge * (this->*E_field)(particle_l[i].position, t_)  + cross_prod;//*(V0_ / pow(d_,2))*ma_kalles_noe ;
   //cout << F_ex << "\n";
   return F_ex;
 }
@@ -93,6 +111,7 @@ void PenningTrap::evolve_RK4(double dt, bool particle_interaction, bool time_dep
 
   int n = particle_l.size();
   arma::mat a(n, 3);
+  t_ += dt;
 
 
   arma::mat k1x(n, 3), k2x(n, 3), k3x(n, 3), k4x(n, 3), k1v(n, 3), k2v(n, 3), k3v(n, 3), k4v(n, 3);
@@ -195,8 +214,8 @@ void PenningTrap::evolve_forward_Euler(double dt, bool particle_interaction){
 
   for(int j = 0; j < n; j++){
     for(int i=0; i<3; i++){
-      particle_l[j].velocity[i] += a[j, i] * dt;
       particle_l[j].position[i] += particle_l[j].velocity[i] *dt;
+      particle_l[j].velocity[i] += a[j, i] * dt;
     }
   }
 }
