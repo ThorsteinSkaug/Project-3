@@ -10,17 +10,17 @@ class PenningTrap
 {
 
 public:
-  double B0_, V0_, d_, f_, w_V_, t_; //Storing the magnetic field strength. applied potential and dimension of the penning trap
+  double B0_, V0_, d_, f_, w_V_, t_; //Storing the magnetic field strength. applied potential, dimension of the penning trap, the amplitude, angular frequency, and the time of the system
   std::vector<Particle> particle_l; //Storing a vector with the variables from the particle class.
 
   // Constructors
-  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl);
-  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f, double w_V);
+  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl); //Constructor for without time dependency
+  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f, double w_V); //Constructor for time dependency
 
   // Add a particle to the trap
   void add_particle(Particle p_in);
 
-  // External electric field at point r=(x,y,z)
+  // External electric field at point r=(x,y,z) and time t. One for a system with time dependency and one for the system without time dependency
   arma::vec external_E_field(arma::vec r, double t);
   arma::vec external_E_field_time_dependent(arma::vec r, double time);
 
@@ -45,7 +45,7 @@ public:
   // Evolve the system one time step (dt) using Forward Euler
   void evolve_forward_Euler(double dt, bool particle_interaction);
 
-  arma::vec (PenningTrap::*E_field)(arma::vec r, double t);
+  arma::vec (PenningTrap::*E_field)(arma::vec r, double t); //A pointer that shows us which external_E_field function to use
 };
 
 

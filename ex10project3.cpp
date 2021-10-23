@@ -51,6 +51,9 @@ int main(){
   std::vector<double> f = {0.1, 0.4, 0.7};
   std::vector<double> w_V;
 
+  for(int part=0; part<n_particles;part++){
+    cout << pl[part].position << "\n";
+  }
 
   bool particle_interaction = false;
   double dt = 0.1;

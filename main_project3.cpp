@@ -7,19 +7,19 @@
 #include <vector>
 #include <string>
 
+//Function for calculating the analytical solution for one particle
 void analytical_solution(arma::vec& x, arma::vec& y, arma::vec& z, double dt, double w_z, double w_p, double w_m, double A_p, double A_m){
   for(int i=1; i<x.size(); i++){
-    x[i] = A_p*cos(w_p*i*dt) + A_m*cos(w_m*i*dt);
-    y[i] = A_p*sin(w_p*i*dt) + A_m*sin(w_m*i*dt);
-    z[i] = z[0] * cos(w_z*(i*dt));
+    x[i] = A_p*cos(w_p*i*dt) + A_m*cos(w_m*i*dt); //Calculate the x-coordinates at time step (dt*i)
+    y[i] = A_p*sin(w_p*i*dt) + A_m*sin(w_m*i*dt); //Calculate the y-coordinates at time step (dt*i)
+    z[i] = z[0] * cos(w_z*(i*dt)); //Calculate the z-coordinates at time step (dt*i)
   }
 }
 
 
 
 int main(){
-    int t = 100;
-    double k_e =  1.38935333*pow(10,5);
+    int t = 100; //The end time
     double T = 9.64852558 * 10;
     double V = 9.64852558 * pow(10,7);
     double B_0 = 1. * T;
@@ -28,23 +28,23 @@ int main(){
     double V_d_ratio = 9.65;
 
     //One particle
-    int q = 1.;
-    double m = 40.078;
-    arma::vec r = {1., 0., 1.};
-    arma::vec v = {0., 1., 0.};
-    vector<Particle> pl;
-    Particle singly_charged_Calcium = Particle(q, m, r, v);
-    PenningTrap trap = PenningTrap(B_0, V_0, d, pl);
-    trap.add_particle(singly_charged_Calcium);
-    double dt = 0.001;
+    int q = 1.; //The charge of the particle
+    double m = 40.078; //The mass of the particle
+    arma::vec r = {1., 0., 1.}; //The position vector
+    arma::vec v = {0., 1., 0.}; //The velocity vector
+    vector<Particle> pl; //Vector for storing all the particles in the trap
+    Particle singly_charged_Calcium = Particle(q, m, r, v); //Make a particle
+    PenningTrap trap = PenningTrap(B_0, V_0, d, pl); //Make a trap
+    trap.add_particle(singly_charged_Calcium); //Add the particle to the trap
+    double dt = 0.001; //The length of each time step
 
 
     //Start analytical solution part
-    double w_0 = singly_charged_Calcium.charge*B_0/singly_charged_Calcium.mass;
-    double w_z = sqrt(2*singly_charged_Calcium.charge*V_0/(singly_charged_Calcium.mass*pow(d,2)));
+    double w_0 = singly_charged_Calcium.charge*B_0/singly_charged_Calcium.mass; //Constant needed for calculating the analytical solution
+    double w_z = sqrt(2*singly_charged_Calcium.charge*V_0/(singly_charged_Calcium.mass*pow(d,2))); //Constant needed for calculating the analytical solution
 
-    double w_p = (w_0 + sqrt(pow(w_0,2)-2*pow(w_z,2)))/2;
-    double w_m = (w_0 - sqrt(pow(w_0,2)-2*pow(w_z,2)))/2;
+    double w_p = (w_0 + sqrt(pow(w_0,2)-2*pow(w_z,2)))/2; //Constant needed for calculating the analytical solution
+    double w_m = (w_0 - sqrt(pow(w_0,2)-2*pow(w_z,2)))/2; //Constant needed for calculating the analytical solution
 
     bool particle_interaction1particle = false;
 
