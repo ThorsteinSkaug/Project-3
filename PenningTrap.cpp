@@ -17,7 +17,7 @@ PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in, vector<Particl
   E_field = &PenningTrap::external_E_field;
 }
 
-PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f, double w_V, double t)
+PenningTrap::PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f, double w_V)
 {
   B0_ = B0_in;
   V0_ = V0_in;
@@ -36,8 +36,8 @@ void PenningTrap::add_particle(Particle p_in)
 }
 
 
-arma::vec PenningTrap::external_E_field_time_dependent(arma::vec r, double time){
-  double new_V0 = V0_*(1+f_*cos(w_V_*time));
+arma::vec PenningTrap::external_E_field_time_dependent(arma::vec r, double t){
+  double new_V0 = V0_*(1+f_*cos(w_V_*t));
   arma::vec E_field = {(new_V0/pow(d_, 2))*r(0), (new_V0/pow(d_, 2))*r(1), -2*(new_V0/pow(d_, 2))*r(2)};
 
   return E_field;
@@ -95,7 +95,8 @@ arma::vec PenningTrap::total_force(int i, bool particle_interaction){
     if(particle_interaction){
       return total_force_particles(i);
     }else{
-      return 0;
+      arma::vec null_vec(3, arma::fill::zeros);
+      return null_vec;
     }
   }
   else if(particle_interaction){
@@ -111,8 +112,7 @@ void PenningTrap::evolve_RK4(double dt, bool particle_interaction, bool time_dep
 
   int n = particle_l.size();
   arma::mat a(n, 3);
-  t_ += dt;
-
+  //double prev_t = t_;
 
   arma::mat k1x(n, 3), k2x(n, 3), k3x(n, 3), k4x(n, 3), k1v(n, 3), k2v(n, 3), k3v(n, 3), k4v(n, 3);
 
@@ -136,6 +136,7 @@ void PenningTrap::evolve_RK4(double dt, bool particle_interaction, bool time_dep
     }
   }
 
+  t_ += dt/2;
   //k2 update
   for(int i = 0; i < n; i++){
     a(i,0) = total_force(i, particle_interaction)[0] / particle_l[i].mass;
@@ -170,6 +171,7 @@ void PenningTrap::evolve_RK4(double dt, bool particle_interaction, bool time_dep
         }
       }
 
+    t_ += dt/2;
       //k4 update
     for(int i = 0; i < n; i++){
       a(i,0) = total_force(i, particle_interaction)[0] / particle_l[i].mass;

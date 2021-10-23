@@ -7,9 +7,9 @@
 #include <vector>
 #include <string>
 
+using namespace std;
 
-
-int count_part_outside(std::vector<Particle> particle_l, double d){
+int count_part_inside(std::vector<Particle> particle_l, double d){
   int count = 0;
   for(int i = 0; i<particle_l.size(); i++){
     if(sqrt(pow(particle_l[i].position[0], 2) + pow(particle_l[i].position[1], 2) + pow(particle_l[i].position[2], 2)) < d){
@@ -20,16 +20,16 @@ int count_part_outside(std::vector<Particle> particle_l, double d){
 }
 
 
-void fill_random_particles(std::vector<Paricles>& particle_l){
+void fill_random_particles(std::vector<Particle>& particle_l, double d){
   for(int i=0; i<particle_l.size(); i++){
-    particle_l(i).position = vec(3).randn() * 0.1 * trap.d_;
-    particle_l(i).velocity = vec(3).randn() * 0.1 * trap.d_;
+    particle_l[i].position = arma::vec(3).randn() * 0.1 * d;
+    particle_l[i].velocity = arma::vec(3).randn() * 0.1 * d;
   }
 }
 
 
 int main(){
-  arma_rng::set_seed(4)
+  arma::arma_rng::set_seed(4);
 
   double k_e =  1.38935333*pow(10,5);
   double T = 9.64852558 * 10;
@@ -45,8 +45,24 @@ int main(){
   int n_particles = 100;
   std::vector<Particle> pl;
   for(int part=0; part<n_particles;part++){
-    pl(part) = Particle(q, m, r, v)
+    pl.push_back(Particle(q, m, r, v));
   }
-  PenningTrap trap = PenningTrap(B_0, V_0, d, pl);
+  fill_random_particles(pl, d);
+  std::vector<double> f = {0.1, 0.4, 0.7};
+  std::vector<double> w_V;
 
+
+  bool particle_interaction = false;
+  double dt = 0.1;
+  for(double w=0.22; w<2.5; w += 0.02){
+    PenningTrap trap = PenningTrap(B_0, V_0, d, pl, f[2], w);
+    std::vector<Particle> original_pl = pl;
+    for(int j=0; j<int(500/dt); j++){
+      trap.evolve_RK4(dt, particle_interaction);
+    }
+    int count_part = count_part_inside(trap.particle_l, d);
+
+    cout << count_part << "\n";
+    pl = original_pl;
+  }
 }

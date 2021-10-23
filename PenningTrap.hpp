@@ -15,7 +15,7 @@ public:
 
   // Constructors
   PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl);
-  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f, double w_V, double t);
+  PenningTrap(double B0_in, double V0_in, double d_in, vector<Particle> pl_in, double f, double w_V);
 
   // Add a particle to the trap
   void add_particle(Particle p_in);

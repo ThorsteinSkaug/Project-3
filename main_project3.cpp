@@ -49,8 +49,8 @@ int main(){
     bool particle_interaction1particle = false;
 
 
-    double A_p = (1+w_m*1.)/(w_m - w_p);
-    double A_m = (1+w_p*1.)/(w_m - w_p);
+    double A_p = (singly_charged_Calcium.velocity[1]+w_m*singly_charged_Calcium.position[0])/(w_m - w_p);
+    double A_m = -(singly_charged_Calcium.velocity[1]+w_p*singly_charged_Calcium.position[0])/(w_m - w_p);
 
     arma::vec x(int(t/dt)+1);
     x(0) = trap.particle_l[0].position[0];
