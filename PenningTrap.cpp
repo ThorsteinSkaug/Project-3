@@ -81,6 +81,7 @@ arma::vec PenningTrap::total_force_particles(int i){
       }
     }
   }
+  //cout << F_part[0] << '\n';
   return F_part;
 }
 
@@ -186,8 +187,6 @@ void PenningTrap::evolve_RK4(double dt, bool particle_interaction, bool time_dep
           }
         }
 }
-
-
 
 
 
