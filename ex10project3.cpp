@@ -29,7 +29,7 @@ void fill_random_particles(std::vector<Particle>& particle_l, double d){
 
 
 int main(){
-  arma::arma_rng::set_seed(4);
+  arma::arma_rng::set_seed(74);
 
   double k_e =  1.38935333*pow(10,5);
   double T = 9.64852558 * 10;
@@ -51,11 +51,11 @@ int main(){
   std::vector<double> f = {0.1, 0.4, 0.7};
   std::vector<double> w_V;
 
-  for(int part=0; part<n_particles;part++){
-    cout << pl[part].position << "\n";
-  }
+  //for(int part=0; part<n_particles;part++){
+    //cout << pl[part].position << "\n";
+  //}
 
-  bool particle_interaction = false;
+  bool particle_interaction = true;
   double dt = 0.1;
   for(double w=0.22; w<2.5; w += 0.02){
     PenningTrap trap = PenningTrap(B_0, V_0, d, pl, f[2], w);

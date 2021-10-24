@@ -10,9 +10,9 @@
 //Function for calculating the analytical solution for one particle
 void analytical_solution(arma::vec& x, arma::vec& y, arma::vec& z, double dt, double w_z, double w_p, double w_m, double A_p, double A_m){
   for(int i=1; i<x.size(); i++){
-    x[i] = A_p*cos(w_p*i*dt) + A_m*cos(w_m*i*dt); //Calculate the x-coordinates at time step (dt*i)
-    y[i] = -A_p*sin(w_p*i*dt) - A_m*sin(w_m*i*dt); //Calculate the y-coordinates at time step (dt*i)
-    z[i] = z[0] * cos(w_z*(i*dt)); //Calculate the z-coordinates at time step (dt*i)
+    x(i) = A_p*cos(w_p*i*dt) + A_m*cos(w_m*i*dt); //Calculate the x-coordinates at time step (dt*i)
+    y(i) = -A_p*sin(w_p*i*dt) - A_m*sin(w_m*i*dt); //Calculate the y-coordinates at time step (dt*i)
+    z(i) = z(0) * cos(w_z*(i*dt)); //Calculate the z-coordinates at time step (dt*i)
   }
 }
 
@@ -78,6 +78,10 @@ int main(){
 
     std::vector<double> h = {0.1, 0.05, 0.01, 0.005, 0.001};
     for(int i=0; i<5; i++){
+      singly_charged_Calcium = Particle(q, m, r, v); //Make a particle
+      pl.clear();
+      trap = PenningTrap(B_0, V_0, d, pl); //Make a trap
+      trap.add_particle(singly_charged_Calcium); //Add the particle to the trap
       arma::vec x(int(t/h[i])+1);
       x(0) = trap.particle_l[0].position[0];
       arma::vec y(int(t/h[i])+1);
@@ -94,15 +98,15 @@ int main(){
       //cout <<  abs(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2))-(sqrt(pow(x,2)+pow(y,2)+pow(z,2))))/(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2))) <<'\n';
       // Runge Kutta error
       myfile.open("coordinates_rk" + std::to_string(dt) + ".txt");
-      myfile << std::scientific << 0 << " " << abs(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2)) - sqrt(pow(x(0),2)+pow(y(0),2)+pow(z(0),2))) / sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2)) << "\n";
+      myfile << std::scientific << 0 << " " << 0 << "\n";
       for(int i=0; i<int(t/dt); i++){
 
         trap.evolve_RK4(dt, particle_interaction1particle);
-        double error =  abs(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2)) - sqrt(pow(x(i+1),2)+pow(y(i+1),2)+pow(z(i+1),2))) / sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2));
+        //double error =  abs(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2)) - sqrt(pow(x(i+1),2)+pow(y(i+1),2)+pow(z(i+1),2))) / sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2));
+        double error =  sqrt(pow(trap.particle_l[0].position[0]-x(i+1),2)+pow(trap.particle_l[0].position[1]-y(i+1),2)+pow(trap.particle_l[0].position[2]-z(i+1),2)) / sqrt(pow(x(i+1),2)+pow(y(i+1),2)+pow(z(i+1),2));
 
-        myfile << std::scientific << dt*(i+1) << " " << std::scientific << error << '\n';
+        myfile << std::scientific << dt*(i+1) << " " << std::scientific << error << " " << sqrt(pow(trap.particle_l[0].position[0]-x(i+1),2)+pow(trap.particle_l[0].position[1]-y(i+1),2)+pow(trap.particle_l[0].position[2]-z(i+1),2)) << '\n';
         //myfile << std::scientific << dt*(i+1) << " " << std::scientific << abs(trap.particle_l[0].position[0]-x(i+1)/x(i+1)) << " " << std::scientific << abs(trap.particle_l[0].position[1]-y(i+1))/y(i+1) <<" " << std::scientific << abs(trap.particle_l[0].position[2]-z(i+1))/z(i+1) << "\n"; //Write the number of iteration needed for convergence to file
-
 
       }
     }
@@ -128,18 +132,32 @@ int main(){
     }
 
     // Forward Euler error
-      for(int i=0; i<5; i++){
+    for(int i=0; i<5; i++){
+      singly_charged_Calcium = Particle(q, m, r, v); //Make a particle
+      pl.clear();
+      trap2 = PenningTrap(B_0, V_0, d, pl); //Make a trap
+      trap2.add_particle(singly_charged_Calcium); //Add the particle to the trap
+
       std::ofstream myfile3;
       dt = h[i];
 
+      arma::vec x(int(t/h[i])+1);
+      x(0) = trap2.particle_l[0].position[0];
+      arma::vec y(int(t/h[i])+1);
+      y(0) = trap2.particle_l[0].position[1];
+      arma::vec z(int(t/h[i])+1);
+      z(0) = trap2.particle_l[0].position[2];
+
+      analytical_solution(x, y, z, h[i], w_z, w_p, w_m, A_p, A_m);
+
       myfile3.open("coordinates_eu" + std::to_string(dt) + ".txt");
-      myfile3 << std::scientific << 0 << " " << abs(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2)) - sqrt(pow(x(0),2)+pow(y(0),2)+pow(z(0),2))) / sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2)) << "\n";
+      myfile3 << std::scientific << 0 << " " << 0 << "\n";
       for(int i=0; i<int(t/dt); i++){
 
         trap2.evolve_forward_Euler(dt, particle_interaction1particle);
-        double error =  abs(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2)) - sqrt(pow(x(i+1),2)+pow(y(i+1),2)+pow(z(i+1),2))) / sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2));
+        double error =  sqrt(pow(trap2.particle_l[0].position[0]-x(i+1),2)+pow(trap2.particle_l[0].position[1]-y(i+1),2)+pow(trap2.particle_l[0].position[2]-z(i+1),2)) / sqrt(pow(x(i+1),2)+pow(y(i+1),2)+pow(z(i+1),2));
 
-        myfile3 << std::scientific << dt*(i+1) << " " << std::scientific << error << '\n';
+        myfile3 << std::scientific << dt*(i+1) << " " << std::scientific << error << " " << sqrt(pow(trap2.particle_l[0].position[0]-x(i+1),2)+pow(trap2.particle_l[0].position[1]-y(i+1),2)+pow(trap2.particle_l[0].position[2]-z(i+1),2)) << '\n';
 
       }
     }
@@ -149,10 +167,11 @@ int main(){
     //Two particles:
     bool particle_interaction2particle_without = false;
 
-    arma::vec r2 = {2.,3.3, 5.2};
-    arma::vec v2 = {0.3, 1., 0.2};
+    arma::vec r2 = {2.5,4.3, 1.2};
+    arma::vec v2 = {-0.3, 1., 2.2};
     std::vector<Particle> pl2particles;
     Particle singly_charged_Calcium_nr2 = Particle(q, m, r2, v2);
+    singly_charged_Calcium = Particle(q, m, r, v);
     PenningTrap trap2particles = PenningTrap(B_0, V_0, d, pl2particles);
     trap2particles.add_particle(singly_charged_Calcium);
     trap2particles.add_particle(singly_charged_Calcium_nr2);
@@ -162,22 +181,24 @@ int main(){
     myfile2particles << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[1].velocity[0] << " " << std::scientific << trap2particles.particle_l[1].velocity[1] <<" " << std::scientific << trap2particles.particle_l[1].velocity[2] <<"\n";
     for(int i=0; i<int(t/dt); i++){
       trap2particles.evolve_RK4(dt, particle_interaction2particle_without);
-      myfile2particles << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[1].velocity[0] << " " << std::scientific << trap2particles.particle_l[1].velocity[1] <<" " << std::scientific << trap2particles.particle_l[1].velocity[2] <<"\n";
+      myfile2particles << std::scientific << (dt*(i+1)) << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[1].velocity[0] << " " << std::scientific << trap2particles.particle_l[1].velocity[1] <<" " << std::scientific << trap2particles.particle_l[1].velocity[2] <<"\n";
     }
 
     //Two particles:
     bool particle_interaction2particle_with = true;
     std::vector<Particle> pl2particles2;
+    singly_charged_Calcium_nr2 = Particle(q, m, r2, v2);
+    singly_charged_Calcium = Particle(q, m, r, v);
     PenningTrap trap2particles2 = PenningTrap(B_0, V_0, d, pl2particles2);
     trap2particles2.add_particle(singly_charged_Calcium);
     trap2particles2.add_particle(singly_charged_Calcium_nr2);
 
     std::ofstream myfile2particles2;
     myfile2particles2.open("rk2particles_with.txt");
-    myfile2particles2 << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[1].velocity[0] << " " << std::scientific << trap2particles.particle_l[1].velocity[1] <<" " << std::scientific << trap2particles.particle_l[1].velocity[2] <<"\n";
+    myfile2particles2 << std::scientific << 0 << " " << std::scientific << trap2particles2.particle_l[0].position[0] << " " << std::scientific << trap2particles2.particle_l[0].position[1] <<" " << std::scientific << trap2particles2.particle_l[0].position[2] << " " << std::scientific << trap2particles2.particle_l[0].velocity[0] << " " << std::scientific << trap2particles2.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles2.particle_l[0].velocity[2] << " " << std::scientific << trap2particles2.particle_l[1].position[0] << " " << std::scientific << trap2particles2.particle_l[1].position[1] <<" " << std::scientific << trap2particles2.particle_l[1].position[2] << " " << std::scientific << trap2particles2.particle_l[1].velocity[0] << " " << std::scientific << trap2particles2.particle_l[1].velocity[1] <<" " << std::scientific << trap2particles2.particle_l[1].velocity[2] <<"\n";
     for(int i=0; i<int(t/dt); i++){
       trap2particles2.evolve_RK4(dt, particle_interaction2particle_with);
-      myfile2particles2 << std::scientific << 0 << " " << std::scientific << trap2particles.particle_l[0].position[0] << " " << std::scientific << trap2particles.particle_l[0].position[1] <<" " << std::scientific << trap2particles.particle_l[0].position[2] << " " << std::scientific << trap2particles.particle_l[0].velocity[0] << " " << std::scientific << trap2particles.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles.particle_l[0].velocity[2] << " " << std::scientific << trap2particles.particle_l[1].position[0] << " " << std::scientific << trap2particles.particle_l[1].position[1] <<" " << std::scientific << trap2particles.particle_l[1].position[2] << " " << std::scientific << trap2particles.particle_l[1].velocity[0] << " " << std::scientific << trap2particles.particle_l[1].velocity[1] <<" " << std::scientific << trap2particles.particle_l[1].velocity[2] <<"\n";
+      myfile2particles2 << std::scientific << dt*(i+1) << " " << std::scientific << trap2particles2.particle_l[0].position[0] << " " << std::scientific << trap2particles2.particle_l[0].position[1] <<" " << std::scientific << trap2particles2.particle_l[0].position[2] << " " << std::scientific << trap2particles2.particle_l[0].velocity[0] << " " << std::scientific << trap2particles2.particle_l[0].velocity[1] <<" " << std::scientific << trap2particles2.particle_l[0].velocity[2] << " " << std::scientific << trap2particles2.particle_l[1].position[0] << " " << std::scientific << trap2particles2.particle_l[1].position[1] <<" " << std::scientific << trap2particles2.particle_l[1].position[2] << " " << std::scientific << trap2particles2.particle_l[1].velocity[0] << " " << std::scientific << trap2particles2.particle_l[1].velocity[1] <<" " << std::scientific << trap2particles2.particle_l[1].velocity[2] <<"\n";
     }
 
 
