@@ -118,11 +118,11 @@ for i in range(3):
     ax[i].legend()
 
 ax[0].set_xlabel(r'x [$\mu m$]')
-ax[0].set_ylabel(r'$v_x$ [$\mu m / s$]')
+ax[0].set_ylabel(r'$v_x$ [$\mu m / \mu s$]')
 ax[1].set_xlabel(r'y [$\mu m$]')
-ax[1].set_ylabel(r'$v_y$ [$\mu m / s$]')
+ax[1].set_ylabel(r'$v_y$ [$\mu m / \mu s$]')
 ax[2].set_xlabel(r'z [$\mu m$]')
-ax[2].set_ylabel(r'$v_z$ [$\mu m / s$]')
+ax[2].set_ylabel(r'$v_z$ [$\mu m / \mu s$]')
 fig.tight_layout()
 plt.savefig('phase_spaces_without.pdf', dpi=1200)
 plt.show()
@@ -138,11 +138,11 @@ for i in range(3):
     ax[i].legend()
 
 ax[0].set_xlabel(r'x [$\mu m$]')
-ax[0].set_ylabel(r'$v_x$ [$\mu m / s$]')
+ax[0].set_ylabel(r'$v_x$ [$\mu m / \mu s$]')
 ax[1].set_xlabel(r'y [$\mu m$]')
-ax[1].set_ylabel(r'$v_y$ [$\mu m / s$]')
+ax[1].set_ylabel(r'$v_y$ [$\mu m / \mu s$]')
 ax[2].set_xlabel(r'z [$\mu m$]')
-ax[2].set_ylabel(r'$v_z$ [$\mu m / s$]')
+ax[2].set_ylabel(r'$v_z$ [$\mu m / \mu s$]')
 fig.tight_layout()
 
 plt.savefig('phase_spaces_with.pdf', dpi=1200)
@@ -156,7 +156,7 @@ plt.rc('ytick', labelsize=14)
 plt.rc('axes', titlesize=21)     # fontsize of the axes title
 plt.rc('axes', labelsize=21)
 
-fig = plt.figure(figsize=(20,10))
+fig = plt.figure(figsize=(10,10))
 plt.suptitle('Particle motions without interactions')
 ax = plt.axes(projection='3d')
 
@@ -171,7 +171,7 @@ plt.tight_layout()
 plt.savefig('3d1.pdf', dpi=1200)
 plt.show()
 
-fig = plt.figure(figsize=(20,10))
+fig = plt.figure(figsize=(10,10))
 plt.suptitle('Particle motions with interactions')
 ax = plt.axes(projection='3d')
 
