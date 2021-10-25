@@ -8,7 +8,7 @@ For plotting, run command: python3 plot_exercise_9.py
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-It is important to have the follwoing files in your working directory for successfully running the algorithms:
+It is important to have the following files in your working directory for successfully running the algorithms:
 
 Particle.hpp
 
