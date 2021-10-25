@@ -18,3 +18,4 @@ The Makefile is for easy compilation, linking and execution.
 The file main_project3.cpp is a script to evolve the motions of the particles, using the Trap and Particle objects.
 The file ex10project3.cpp is a script to evolve motions of particles using a time dependent electric potential.
 The file plot_exercise_9.py ios a python script to plot all the results from the cpp files
+
