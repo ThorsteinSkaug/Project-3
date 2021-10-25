@@ -85,7 +85,7 @@ int main(){
 
   std::ofstream myfile2;
   myfile2.open("resonance_zoom.txt");
-  double dt = 0.1; //Step size
+  dt = 0.1; //Step size
   for(double w=0.37; w<0.52; w += 0.005){
     //define traps
     PenningTrap trap_without = PenningTrap(B_0, V_0, d, pl, f[1], w);
