@@ -1,8 +1,20 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
 
-# Importing from txt file made in the cpp code
+
+small= 17
+medium = 24
+big = 30
+
+plt.rc('font', size=small)          # controls default text sizes
+plt.rc('axes', titlesize=medium)     # fontsize of the axes title
+plt.rc('axes', labelsize=medium)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=medium)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=medium)    # fontsize of the tick labels
+plt.rc('legend', fontsize=small)    # legend fontsize
+plt.rc('figure', titlesize=big)  # fontsize of the figure title
 
 l = []
 df = pd.read_csv('coordinates_an.txt', sep=' ', header=None)
@@ -24,70 +36,73 @@ pos_eu = read('coordinates_euler.txt')
 pos_rk = read('coordinates_rk.txt')
 
 
-fig,ax = plt.subplots(1,2, figsize=(20,10))
+fig,ax = plt.subplots(figsize=(10,10))
 
 fig.suptitle('Particle motion in Penning Trap')
 
-ax[0].plot(pos_eu[1],pos_eu[2], '--', color='r', label='Euler')
-ax[0].plot(pos_rk[1],pos_rk[2], '--', color='b', label='RK4')
-ax[0].plot(pos_an[1],pos_an[2], '-', color='k', label='Analytical')
-ax[0].plot(pos_an[1][0], pos_an[2][0], 'o', markersize=8, label='Starting position')
-ax[0].plot(pos_an[1][-1], pos_an[2][-1], 'o', markersize=8, label='Final position')
-ax[0].plot(pos_rk[1][-1], pos_rk[2][-1], 'o', markersize=8, label='Final position_rk')
-ax[0].plot(pos_eu[1][-1], pos_eu[2][-1], 'o', markersize=8, label='Final position_eu')
-ax[0].grid()
-ax[0].set_ylabel(r'y [$\mu m$]')
-ax[0].set_xlabel(r'x [$\mu m$]')
-ax[0].legend()
-ax[0].axis('equal')
-
-ax[1].plot(t001,pos_eu[3], '--', color='r', label='Euler')
-ax[1].plot(t001,pos_rk[3], '--', color='b', label='RK4')
-ax[1].plot(t001,pos_an[3], '--', color='k', label='Analytical')
-ax[1].grid()
-ax[1].set_ylabel(r'z [$\mu m$]')
-df = pd.read_csv('resonance.txt', sep=' ', header=None)
-w_V = df[0].to_numpy()
-f_1 = df[1].to_numpy()
-f_2 = df[2].to_numpy()
-f_3 = df[3].to_numpy()
-ax[1].set_xlabel(r't [$\mu s$]')
-ax[1].legend()
-
+ax.plot(pos_eu[1],pos_eu[2], '--', color='r', label='Euler')
+ax.plot(pos_rk[1],pos_rk[2], '--', color='b', label='RK4')
+ax.plot(pos_an[1],pos_an[2], '-', color='k', label='Analytical')
+ax.plot(pos_an[1][0], pos_an[2][0], 'o', markersize=8, label='Starting position')
+ax.plot(pos_an[1][-1], pos_an[2][-1], 'o', markersize=8, label='Final position')
+ax.plot(pos_rk[1][-1], pos_rk[2][-1], 'o', markersize=8, label='Final position_rk')
+ax.plot(pos_eu[1][-1], pos_eu[2][-1], 'o', markersize=8, label='Final position_eu')
+ax.grid()
+ax.set_ylabel(r'y [$\mu m$]')
+ax.set_xlabel(r'x [$\mu m$]')
+ax.legend(loc=1)
+ax.axis('equal')
 fig.tight_layout()
-plt.savefig('1particle_motion.pdf', dpi=900)
+plt.savefig('1particle_motion1.pdf', dpi=1200)
 plt.show()
+
+fig,ax = plt.subplots(figsize=(10,10))
+
+ax.plot(t001,pos_eu[3], '--', color='r', label='Euler')
+ax.plot(t001,pos_rk[3], '--', color='b', label='RK4')
+ax.plot(t001,pos_an[3], '--', color='k', label='Analytical')
+ax.grid()
+ax.set_ylabel(r'z [$\mu m$]')
+ax.set_xlabel(r't [$\mu s$]')
+ax.legend()
+fig.tight_layout()
+plt.savefig('1particle_motion2.pdf', dpi=1200)
+plt.show()
+
 
 # 2.
 
 rk2_no =  read('rk2particles_without.txt')
 rk2 =  read('rk2particles_with.txt')
 
+fig, ax = plt.subplots(figsize=(10,10))
 
-fig, ax = plt.subplots(1,2, figsize=(20,10))
-
-fig.suptitle('Particle motions in the xy-plane')
-
-ax[0].plot(rk2_no[1],rk2_no[2], '--', color='r', label='First particle')
-ax[0].plot(rk2_no[7],rk2_no[8], '--', color='b', label='Second Particle')
-ax[0].grid()
-ax[0].set_ylabel(r'x [$\mu m$]')
-ax[0].set_xlabel(r'y [$\mu m$]')
-ax[0].legend()
-ax[0].axis('equal')
-ax[0].set_title('Without Particle interactions')
-
-ax[1].plot(rk2[1],rk2[2], '--', color='r', label='First particle')
-ax[1].plot(rk2[7],rk2[8], '--', color='b', label='Second Particle')
-ax[1].grid()
-ax[1].set_xlabel(r'x [$\mu m$]')
-ax[1].set_ylabel(r'y [$\mu m$]')
-ax[1].legend()
-ax[1].axis('equal')
-ax[1].set_title('With Particle interactions')
+ax.plot(rk2_no[1],rk2_no[2], '--', color='r', label='First particle')
+ax.plot(rk2_no[7],rk2_no[8], '--', color='b', label='Second Particle')
+ax.set_ylabel(r'x [$\mu m$]')
+ax.set_xlabel(r'y [$\mu m$]')
+ax.legend()
+ax.axis('equal')
+ax.grid()
+ax.set_title('Particle motions in the xy-plane without particle interactions')
 
 fig.tight_layout()
-plt.savefig('2particle_motion.pdf', dpi=900)
+plt.savefig('2particle_motion1.pdf', dpi=1200)
+plt.show()
+
+fig, ax = plt.subplots(figsize=(10,10))
+
+ax.plot(rk2[1],rk2[2], '--', color='r', label='First particle')
+ax.plot(rk2[7],rk2[8], '--', color='b', label='Second Particle')
+ax.set_xlabel(r'x [$\mu m$]')
+ax.set_ylabel(r'y [$\mu m$]')
+ax.legend()
+ax.grid()
+ax.axis('equal')
+ax.set_title('Particle motions in the xy-plane with particle interactions')
+
+fig.tight_layout()
+plt.savefig('2particle_motion2.pdf', dpi=1200)
 plt.show()
 
 # 3.
@@ -100,14 +115,17 @@ for i in range(3):
     ax[i].plot(rk2_no[i+1],rk2_no[i+4], '--', color='r', label='First particle')
     ax[i].plot(rk2_no[i+7],rk2_no[i+10], '--', color='b', label='Second Particle')
     ax[i].grid()
-    ax[i].set_ylabel(r'x [$\mu m$]')
-    ax[i].set_xlabel(r'$v_x$ [$\mu m / s$]')
     ax[i].legend()
 
+ax[0].set_xlabel(r'x [$\mu m$]')
+ax[0].set_ylabel(r'$v_x$ [$\mu m / s$]')
+ax[1].set_xlabel(r'y [$\mu m$]')
+ax[1].set_ylabel(r'$v_y$ [$\mu m / s$]')
+ax[2].set_xlabel(r'z [$\mu m$]')
+ax[2].set_ylabel(r'$v_z$ [$\mu m / s$]')
 fig.tight_layout()
-plt.savefig('phase_spaces_without.pdf', dpi=900)
+plt.savefig('phase_spaces_without.pdf', dpi=1200)
 plt.show()
-
 
 fig,ax = plt.subplots(1,3, figsize=(30,10))
 
@@ -117,24 +135,31 @@ for i in range(3):
     ax[i].plot(rk2[i+1],rk2[i+4], '--', color='r', label='First particle')
     ax[i].plot(rk2[i+7],rk2[i+10], '--', color='b', label='Second Particle')
     ax[i].grid()
-    ax[i].set_ylabel(r'x [$\mu m$]')
-    ax[i].set_xlabel(r'$v_x$ [$\mu m / s$]')
     ax[i].legend()
 
+ax[0].set_xlabel(r'x [$\mu m$]')
+ax[0].set_ylabel(r'$v_x$ [$\mu m / s$]')
+ax[1].set_xlabel(r'y [$\mu m$]')
+ax[1].set_ylabel(r'$v_y$ [$\mu m / s$]')
+ax[2].set_xlabel(r'z [$\mu m$]')
+ax[2].set_ylabel(r'$v_z$ [$\mu m / s$]')
 fig.tight_layout()
-plt.savefig('phase_spaces_with.pdf', dpi=900)
+
+plt.savefig('phase_spaces_with.pdf', dpi=1200)
 plt.show()
 
 #Plotting
 
 from mpl_toolkits import mplot3d
+plt.rc('xtick', labelsize=14)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=14)
+plt.rc('axes', titlesize=21)     # fontsize of the axes title
+plt.rc('axes', labelsize=21)
 
 fig = plt.figure(figsize=(20,10))
-plt.suptitle('Particle motions')
+plt.suptitle('Particle motions without interactions')
+ax = plt.axes(projection='3d')
 
-ax = fig.add_subplot(1,2,1,projection='3d')
-
-ax.set_title('No particle interactions')
 ax.plot(rk2_no[1], rk2_no[2], rk2_no[3], label='Particle 1')
 ax.plot(rk2_no[7], rk2_no[8], rk2_no[9], label='Particle 2')
 ax.set_xlabel(r'x [$\mu m$]')
@@ -142,9 +167,14 @@ ax.set_ylabel(r'y [$\mu m$]')
 ax.set_zlabel(r'z [$\mu m$]')
 ax.legend()
 
-ax = fig.add_subplot(1,2,2, projection='3d')
+plt.tight_layout()
+plt.savefig('3d1.pdf', dpi=1200)
+plt.show()
 
-ax.set_title('With particle interactions')
+fig = plt.figure(figsize=(20,10))
+plt.suptitle('Particle motions with interactions')
+ax = plt.axes(projection='3d')
+
 ax.plot(rk2[1], rk2[2], rk2[3], label='Particle 1')
 ax.plot(rk2[7], rk2[8], rk2[9], label='Particle 2')
 ax.set_xlabel(r'x [$\mu m$]')
@@ -152,9 +182,14 @@ ax.set_ylabel(r'y [$\mu m$]')
 ax.set_zlabel(r'z [$\mu m$]')
 ax.legend()
 
-plt.savefig('3d.pdf', dpi=900)
+plt.tight_layout()
+plt.savefig('3d2.pdf', dpi=1200)
 plt.show()
 
+plt.rc('axes', titlesize=medium)     # fontsize of the axes title
+plt.rc('axes', labelsize=medium)
+plt.rc('xtick', labelsize=small)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=small)
 
 rk_h1 = read('coordinates_rk0.100000.txt')
 rk_h05 = read('coordinates_rk0.050000.txt')
@@ -174,22 +209,53 @@ r_eu = [eu_h1[1],eu_h05[1],eu_h01[1],eu_h005[1],eu_h001[1]]
 h = [0.1,0.05,0.01,0.005,0.001]
 
 
-fig,ax = plt.subplots(1,2, figsize=(20,10))
+fig,ax = plt.subplots(figsize=(10,10))
 for i in range(5):
-    ax[0].plot(t[i], r_rk[i],label=('h = %.3f' %(h[i])))
-ax[0].legend()
-ax[0].set_title('Relative error from Runge-Kutta method')
-ax[0].set_xlabel(r'Time [$\mu$ s]')
-ax[0].set_ylabel(r'Relative error')
+    ax.plot(t[i], r_rk[i],label=('h = %.3f' %(h[i])))
+ax.legend()
+ax.set_title('Relative error from Runge-Kutta method')
+ax.set_xlabel(r'Time [$\mu$ s]')
+ax.set_ylabel(r'log(Relative error)')
+ax.set_yscale('log')
+ax.grid()
+plt.tight_layout()
+plt.savefig('logerror1.pdf', dpi=1200)
+
+
+fig,ax = plt.subplots(figsize=(10,10))
 
 for i in range(5):
-    ax[1].plot(t[i], r_eu[i],label=('h = %.3f' %(h[i])))
-ax[1].legend()
-ax[1].set_title('Relative error from Forward Euler method')
-ax[1].set_xlabel(r'Time [$\mu$ s]')
-ax[1].set_ylabel(r'Relative error')
+    ax.plot(t[i], r_eu[i],label=('h = %.3f' %(h[i])))
+ax.legend()
+ax.set_title('Relative error from Forward Euler method')
+ax.set_xlabel(r'Time [$\mu$ s]')
+ax.set_ylabel(r'log (Relative error)')
+ax.set_yscale('log')
+ax.grid()
+plt.tight_layout()
+plt.savefig('logerror2.pdf', dpi=1200)
 
-plt.savefig('error.pdf', dpi=900)
+fig,ax = plt.subplots(figsize=(10,10))
+for i in range(5):
+    ax.plot(t[i], r_rk[i],label=('h = %.3f' %(h[i])))
+ax.legend()
+ax.set_title('Relative error from Runge-Kutta method')
+ax.set_xlabel(r'Time [$\mu$ s]')
+ax.set_ylabel(r'log(Relative error)')
+ax.grid()
+plt.tight_layout()
+plt.savefig('error1.pdf', dpi=1200)
+
+fig,ax = plt.subplots(figsize=(10,10))
+for i in range(5):
+    ax.plot(t[i], r_eu[i],label=('h = %.3f' %(h[i])))
+ax.legend()
+ax.set_title('Relative error from Forward Euler method')
+ax.set_xlabel(r'Time [$\mu$ s]')
+ax.set_ylabel(r'log (Relative error)')
+ax.grid()
+plt.tight_layout()
+plt.savefig('error2.pdf', dpi=1200)
 
 print('RK4')
 for i in range(5):
@@ -221,26 +287,30 @@ print(r_err_eu)
 
 res = read('resonance.txt')
 
-fig, ax = plt.subplots()
-ax.plot(res[0], res[1], label='f=0.1')
-ax.plot(res[0], res[2], label='f=0.4')
-ax.plot(res[0], res[3], label='f=0.7')
+fig, ax = plt.subplots(figsize=(10,10))
+ax.plot(res[0], res[1]/100, label='f=0.1')
+ax.plot(res[0], res[2]/100, label='f=0.4')
+ax.plot(res[0], res[3]/100, label='f=0.7')
 ax.set_xlabel(r'$\omega_V$ [MHz]')
 ax.set_ylabel('Num. particles', rotation=90)
-ax.set_title('Numper of particles left in box for a range of frequencies')
+ax.set_title('Number of particles left in the box')
 ax.legend()
-plt.savefig('resonance.pdf', dpi=900)
+ax.grid()
+plt.tight_layout()
+plt.savefig('resonance.pdf', dpi=1200)
 plt.show()
 
 
-res = read('resonance_zoomed.txt')
+res = read('resonance_zoom.txt')
 
-fig, ax = plt.subplots()
-ax.plot(res[0], res[1], label='Without particle interactions')
-ax.plot(res[0], res[2], label='With particle interactions')
+fig, ax = plt.subplots(figsize=(10,10))
+ax.plot(res[0], res[1]/100, label='Without particle interactions')
+ax.plot(res[0], res[2]/100, label='With particle interactions')
 ax.set_xlabel(r'$\omega_V$ [MHz]')
 ax.set_ylabel('Num. particles', rotation=90)
-ax.set_title('Numper of particles left in box for a range of frequencies')
+ax.set_title('Number of particles left in the box')
 ax.legend()
-plt.savefig('resonance_zoomed.pdf', dpi=900)
+ax.grid()
+plt.tight_layout()
+plt.savefig('resonance_zoom.pdf', dpi=1200)
 plt.show()
