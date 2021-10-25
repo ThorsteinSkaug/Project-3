@@ -23,7 +23,7 @@ Makefile
  
 ----------------------------------------------------------------------------------------------------------------------
 
-The Particle class is a class made to define an object Particle, where the particle's attributes can be initialsed.
+The Particle class is a class made to define an object Particle, where the particle's attributes can be initialised.
 
 The PenningTrap class is a class made to define an object Trap, where the trap's paramaters can be defined and initialised. 
 
