@@ -6,6 +6,8 @@ For algorithms related to problem 10, run command: make 10
 
 For plotting, run command: python3 plot_exercise_9.py
 
+--------------------------------------------------------------------------------------------------------------------------------
+
 It is important to have the follwoing files in your working directory for successfully running the algorithms:
 
 Particle.hpp
@@ -18,6 +20,8 @@ PenningTrap.cpp
 
 Makefile
 
+ 
+----------------------------------------------------------------------------------------------------------------------
 
 The Particle class is a class made to define an object Particle, where the particle's attributes can be initialsed.
 
