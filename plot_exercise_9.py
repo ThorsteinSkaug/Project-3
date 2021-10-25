@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 
+#Set the size of the plots, text, and axes
 small= 17
 medium = 24
 big = 30
@@ -16,11 +17,9 @@ plt.rc('ytick', labelsize=medium)    # fontsize of the tick labels
 plt.rc('legend', fontsize=small)    # legend fontsize
 plt.rc('figure', titlesize=big)  # fontsize of the figure title
 
-l = []
-df = pd.read_csv('coordinates_an.txt', sep=' ', header=None)
-l.append(df[0].to_numpy())
-print(l)
 
+
+#This function takes a filename, reads it and output the columns as a list of np.arrays
 def read(filename):
     df = pd.read_csv(filename, sep=' ', header=None)
     var = []
@@ -30,12 +29,14 @@ def read(filename):
 
 # 1.
 
+#Read the files for the single particle cases
 pos_an =  read('coordinates_an.txt')
 t001 = pos_an[0]
 pos_eu = read('coordinates_euler.txt')
 pos_rk = read('coordinates_rk.txt')
 
 
+#Plot the results for the single particle cases
 fig,ax = plt.subplots(figsize=(10,10))
 
 fig.suptitle('Particle motion in Penning Trap')
@@ -65,16 +66,18 @@ ax.grid()
 ax.set_ylabel(r'z [$\mu m$]')
 ax.set_xlabel(r't [$\mu s$]')
 ax.legend()
+fig.suptitle(r'Motion in $z$-direction')
 fig.tight_layout()
 plt.savefig('1particle_motion2.pdf', dpi=1200)
 plt.show()
 
 
 # 2.
-
+#Read the files for the two particle cases
 rk2_no =  read('rk2particles_without.txt')
 rk2 =  read('rk2particles_with.txt')
 
+#Plot the results for the two particle cases
 fig, ax = plt.subplots(figsize=(10,10))
 
 ax.plot(rk2_no[1],rk2_no[2], '--', color='r', label='First particle')
@@ -84,7 +87,7 @@ ax.set_xlabel(r'y [$\mu m$]')
 ax.legend()
 ax.axis('equal')
 ax.grid()
-ax.set_title('Particle motions in the xy-plane without particle interactions')
+plt.suptitle('Particle motions without particle interactions')
 
 fig.tight_layout()
 plt.savefig('2particle_motion1.pdf', dpi=1200)
@@ -99,7 +102,7 @@ ax.set_ylabel(r'y [$\mu m$]')
 ax.legend()
 ax.grid()
 ax.axis('equal')
-ax.set_title('Particle motions in the xy-plane with particle interactions')
+plt.suptitle('Particle motions with particle interactions')
 
 fig.tight_layout()
 plt.savefig('2particle_motion2.pdf', dpi=1200)
@@ -107,6 +110,7 @@ plt.show()
 
 # 3.
 
+#Plot the phase space
 fig,ax = plt.subplots(1,3, figsize=(30,10))
 
 fig.suptitle('Phase space in Penning Trap without particle interactions')
@@ -148,8 +152,8 @@ fig.tight_layout()
 plt.savefig('phase_spaces_with.pdf', dpi=1200)
 plt.show()
 
-#Plotting
 
+#Plotting the 3D plots
 from mpl_toolkits import mplot3d
 plt.rc('xtick', labelsize=14)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=14)
@@ -191,6 +195,7 @@ plt.rc('axes', labelsize=medium)
 plt.rc('xtick', labelsize=small)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=small)
 
+#Read the error files
 rk_h1 = read('coordinates_rk0.100000.txt')
 rk_h05 = read('coordinates_rk0.050000.txt')
 rk_h01 = read('coordinates_rk0.010000.txt')
@@ -202,18 +207,18 @@ eu_h01 = read('coordinates_eu0.010000.txt')
 eu_h005 = read('coordinates_eu0.005000.txt')
 eu_h001 = read('coordinates_eu0.001000.txt')
 
-t = [rk_h1[0],rk_h05[0],rk_h01[0],rk_h005[0],rk_h001[0]]
-r_rk = [rk_h1[1],rk_h05[1],rk_h01[1],rk_h005[1],rk_h001[1]]
-r_eu = [eu_h1[1],eu_h05[1],eu_h01[1],eu_h005[1],eu_h001[1]]
+t = [rk_h1[0],rk_h05[0],rk_h01[0],rk_h005[0],rk_h001[0]] #List storing the different time arrays
+r_rk = [rk_h1[1],rk_h05[1],rk_h01[1],rk_h005[1],rk_h001[1]] #List storing the results from runge-kutta
+r_eu = [eu_h1[1],eu_h05[1],eu_h01[1],eu_h005[1],eu_h001[1]] #List storing the results from forward euler
 
-h = [0.1,0.05,0.01,0.005,0.001]
+h = [0.1,0.05,0.01,0.005,0.001] #List storing the different step size values
 
-
+#Plot the error plots
 fig,ax = plt.subplots(figsize=(10,10))
 for i in range(5):
     ax.plot(t[i], r_rk[i],label=('h = %.3f' %(h[i])))
 ax.legend()
-ax.set_title('Relative error from Runge-Kutta method')
+plt.suptitle('Relative error from Runge-Kutta method')
 ax.set_xlabel(r'Time [$\mu$ s]')
 ax.set_ylabel(r'log(Relative error)')
 ax.set_yscale('log')
@@ -227,7 +232,7 @@ fig,ax = plt.subplots(figsize=(10,10))
 for i in range(5):
     ax.plot(t[i], r_eu[i],label=('h = %.3f' %(h[i])))
 ax.legend()
-ax.set_title('Relative error from Forward Euler method')
+plt.suptitle('Relative error from Forward Euler method')
 ax.set_xlabel(r'Time [$\mu$ s]')
 ax.set_ylabel(r'log (Relative error)')
 ax.set_yscale('log')
@@ -239,7 +244,7 @@ fig,ax = plt.subplots(figsize=(10,10))
 for i in range(5):
     ax.plot(t[i], r_rk[i],label=('h = %.3f' %(h[i])))
 ax.legend()
-ax.set_title('Relative error from Runge-Kutta method')
+plt.suptitle('Relative error from Runge-Kutta method')
 ax.set_xlabel(r'Time [$\mu$ s]')
 ax.set_ylabel(r'log(Relative error)')
 ax.grid()
@@ -250,17 +255,19 @@ fig,ax = plt.subplots(figsize=(10,10))
 for i in range(5):
     ax.plot(t[i], r_eu[i],label=('h = %.3f' %(h[i])))
 ax.legend()
-ax.set_title('Relative error from Forward Euler method')
+plt.suptitle('Relative error from Forward Euler method')
 ax.set_xlabel(r'Time [$\mu$ s]')
 ax.set_ylabel(r'log (Relative error)')
 ax.grid()
 plt.tight_layout()
 plt.savefig('error2.pdf', dpi=1200)
 
+#Print the mean error values for runge kutta
 print('RK4')
 for i in range(5):
     print(h[i], np.mean(r_rk[i]))
 
+#Print the mean error values for forward euler
 print('Euler')
 for i in range(5):
     print(h[i], np.mean(r_eu[i]))
@@ -269,8 +276,8 @@ for i in range(5):
 #Calculate r_err
 delta_rk = [rk_h1[2],rk_h05[2],rk_h01[2],rk_h005[2],rk_h001[2]]
 delta_eu = [eu_h1[2],eu_h05[2],eu_h01[2],eu_h005[2],eu_h001[2]]
-r_err_rk = 0
-r_err_eu = 0
+r_err_rk = 0 #Storing the r_err for runge kutta
+r_err_eu = 0 #Storing the r_err for forward euler
 for i in range(1,5):
     delta_max_i_rk = max(delta_rk[i-1])
     delta_max_i1_rk = max(delta_rk[i])
@@ -285,6 +292,7 @@ print(r_err_rk)
 print(r_err_eu)
 
 
+#Read and plot the resonance and resonance_zoom results
 res = read('resonance.txt')
 
 fig, ax = plt.subplots(figsize=(10,10))
@@ -293,7 +301,7 @@ ax.plot(res[0], res[2]/100, label='f=0.4')
 ax.plot(res[0], res[3]/100, label='f=0.7')
 ax.set_xlabel(r'$\omega_V$ [MHz]')
 ax.set_ylabel('Num. particles', rotation=90)
-ax.set_title('Number of particles left in the box')
+plt.suptitle('Number of particles left in the box')
 ax.legend()
 ax.grid()
 plt.tight_layout()
@@ -308,7 +316,7 @@ ax.plot(res[0], res[1]/100, label='Without particle interactions')
 ax.plot(res[0], res[2]/100, label='With particle interactions')
 ax.set_xlabel(r'$\omega_V$ [MHz]')
 ax.set_ylabel('Num. particles', rotation=90)
-ax.set_title('Number of particles left in the box')
+plt.suptitle('Number of particles left in the box')
 ax.legend()
 ax.grid()
 plt.tight_layout()
