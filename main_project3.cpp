@@ -98,7 +98,7 @@ int main(){
       //cout <<  abs(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2))-(sqrt(pow(x,2)+pow(y,2)+pow(z,2))))/(sqrt(pow(trap.particle_l[0].position[0],2)+pow(trap.particle_l[0].position[1],2)+pow(trap.particle_l[0].position[1],2))) <<'\n';
       // Runge Kutta error
       myfile.open("coordinates_rk" + std::to_string(dt) + ".txt");
-      myfile << std::scientific << 0 << " " << 0 << "\n";
+      myfile << std::scientific << 0 << " " << 0 << " "<< 0 <<"\n";
       for(int i=0; i<int(t/dt); i++){
 
         trap.evolve_RK4(dt, particle_interaction1particle);
@@ -151,7 +151,7 @@ int main(){
       analytical_solution(x, y, z, h[i], w_z, w_p, w_m, A_p, A_m);
 
       myfile3.open("coordinates_eu" + std::to_string(dt) + ".txt");
-      myfile3 << std::scientific << 0 << " " << 0 << "\n";
+      myfile3 << std::scientific << 0 << " " << 0 << " "<< 0 << "\n";
       for(int i=0; i<int(t/dt); i++){
 
         trap2.evolve_forward_Euler(dt, particle_interaction1particle);
@@ -167,7 +167,7 @@ int main(){
     //Two particles:
     bool particle_interaction2particle_without = false;
 
-    arma::vec r2 = {2.5,4.3, 1.2};
+    arma::vec r2 = {0.5, 2.3, 0.2};
     arma::vec v2 = {-0.3, 1., 2.2};
     std::vector<Particle> pl2particles;
     Particle singly_charged_Calcium_nr2 = Particle(q, m, r2, v2);

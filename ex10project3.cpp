@@ -51,21 +51,50 @@ int main(){
   std::vector<double> f = {0.1, 0.4, 0.7};
   std::vector<double> w_V;
 
-  //for(int part=0; part<n_particles;part++){
-    //cout << pl[part].position << "\n";
-  //}
 
-  bool particle_interaction = true;
+/*
+  std::ofstream myfile;
+  myfile.open("resonance.txt");
+  bool particle_interaction = false;
   double dt = 0.1;
-  for(double w=0.22; w<2.5; w += 0.02){
-    PenningTrap trap = PenningTrap(B_0, V_0, d, pl, f[2], w);
+  double w_V_step = 0.02;
+  for(double w=0.20+w_V_step; w<2.5; w += w_V_step){
+    cout << w << "\n";
+    PenningTrap trap1 = PenningTrap(B_0, V_0, d, pl, f[0], w);
+    PenningTrap trap2 = PenningTrap(B_0, V_0, d, pl, f[1], w);
+    PenningTrap trap3 = PenningTrap(B_0, V_0, d, pl, f[2], w);
     std::vector<Particle> original_pl = pl;
     for(int j=0; j<int(500/dt); j++){
-      trap.evolve_RK4(dt, particle_interaction);
+      trap1.evolve_RK4(dt, particle_interaction);
+      trap2.evolve_RK4(dt, particle_interaction);
+      trap3.evolve_RK4(dt, particle_interaction);
     }
-    int count_part = count_part_inside(trap.particle_l, d);
+    int count_part1 = count_part_inside(trap1.particle_l, d);
+    int count_part2 = count_part_inside(trap2.particle_l, d);
+    int count_part3 = count_part_inside(trap3.particle_l, d);
 
-    cout << count_part << "\n";
+    myfile << w << " " << count_part1 << " " << count_part2 << " " << count_part3 << "\n";
+    pl = original_pl;
+  }
+*/
+
+  std::ofstream myfile2;
+  myfile2.open("resonance_zoom.txt");
+  bool particle_interaction = false;
+  double dt = 0.1;
+  for(double w=0.37; w<0.52; w += 0.005){
+    cout << w << "\n";
+    PenningTrap trap_without = PenningTrap(B_0, V_0, d, pl, f[1], w);
+    PenningTrap trap_with = PenningTrap(B_0, V_0, d, pl, f[1], w);
+    std::vector<Particle> original_pl = pl;
+    for(int j=0; j<int(500/dt); j++){
+      trap_without.evolve_RK4(dt, false);
+      trap_with.evolve_RK4(dt, true);
+    }
+    int count_part1 = count_part_inside(trap_without.particle_l, d);
+    int count_part2 = count_part_inside(trap_with.particle_l, d);
+
+    myfile2 << w << " " << count_part1 << " " << count_part2 << "\n";
     pl = original_pl;
   }
 }

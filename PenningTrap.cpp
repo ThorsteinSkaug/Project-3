@@ -38,7 +38,7 @@ void PenningTrap::add_particle(Particle p_in)
 
 
 arma::vec PenningTrap::external_E_field_time_dependent(arma::vec r, double t){
-  double new_V0 = V0_*(1+f_*cos(w_V_*t)); //The time dependent V0
+  double new_V0 = V0_*(1.+f_*cos(w_V_*t)); //The time dependent V0
   arma::vec E_field = {(new_V0/pow(d_, 2))*r(0), (new_V0/pow(d_, 2))*r(1), -2*(new_V0/pow(d_, 2))*r(2)}; //Calculate the external E field
 
   return E_field;
